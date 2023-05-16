@@ -1,0 +1,88 @@
+<!--Copyright (c) 2023, Luke Harrison
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.-->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Exam Time Calculator</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			text-align: center;
+		}
+		h1 {
+			font-size: 100px;
+		}
+        h2 {
+            font-size: 48px;
+        }
+		p {
+			font-size: 12px;
+		}
+	</style>
+	<script type="text/javascript">
+		function calculate() {
+  // Get the current time
+  var now = new Date();
+
+  // Get the start time, exam length, and extra time percentage from the text fields
+  var start_time_str = document.getElementById("start_time").value;
+  var exam_length = parseInt(document.getElementById("exam_length").value);
+  var extra_time_percent = parseInt(document.getElementById("extra_time_percent").value);
+
+  // Check if valid input values are present
+  if (start_time_str && !isNaN(exam_length) && !isNaN(extra_time_percent)) {
+    // Convert start time to a date object
+    var start_time_parts = start_time_str.split(":");
+    var start_time = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(start_time_parts[0]), parseInt(start_time_parts[1]));
+
+    // Calculate the end time and end time with extra time
+    var end_time = new Date(start_time.getTime() + exam_length * 60000);
+    var end_time_extra = new Date(start_time.getTime() + Math.round(exam_length * (1 + extra_time_percent / 100)) * 60000);
+
+    // Display the results
+    document.getElementById("end_time").innerHTML = formatTime(end_time);
+    document.getElementById("end_time_extra").innerHTML = formatTime(end_time_extra);
+  } else {
+    // Clear the results if invalid input values are present
+    document.getElementById("end_time").innerHTML = "";
+    document.getElementById("end_time_extra").innerHTML = "";
+  }
+}
+
+
+		function formatTime(date) {
+			var hours = date.getHours();
+			var minutes = date.getMinutes();
+			var seconds = date.getSeconds();
+			var ampm = hours >= 12 ? "PM" : "AM";
+			hours = hours % 12;
+			hours = hours ? hours : 12; // the hour '0' should be '12'
+			minutes = minutes < 10 ? "0" + minutes : minutes;
+			seconds = seconds < 10 ? "0" + seconds : seconds;
+			var strTime = hours + ":" + minutes + ":" + seconds + " " + ampm;
+			return strTime;
+		}
+	</script>
+</head>
+<body onload="calculate()">
+	<h1><span id="current_time"></span></h1>
+	<p>Start time: <input type="time" id="start_time" onchange="calculate()"></p>
+	<p>Exam length (minutes): <input type="number" id="exam_length" onchange="calculate()"></p>
+	<p>Extra time (%): <input type="number" id="extra_time_percent" onchange="calculate()" value="25"></p>
+	<h2>End time: <span id="end_time"></span></h2>
+	<h2>Extra time: <span id="end_time_extra"></span></h2>
+	<script type="text/javascript">
+		// Update the current time every second
+		setInterval(function() {
+			var now = new Date();
+			document.getElementById("current_time").innerHTML = formatTime(now);
+		}, 1000);
+	</script>
+</body>
+</html>
